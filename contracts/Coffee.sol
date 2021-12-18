@@ -1,0 +1,67 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
+
+contract CoffeePortal {
+    uint256 totalCoffee;
+
+    address public owner = msg.sender;
+
+    event NewCoffee(
+        address indexed from,
+        uint256 timestamp,
+        string message,
+        string name
+    );
+
+    constructor() {}
+
+    struct Coffee {
+        address giver; // The address of the user who buys me a coffee.
+        string message; // The message the user sent.
+        string name; // The name of the user who buys me a coffee.
+        uint256 timestamp; // The timestamp when the user buys me a coffee.
+    }
+
+    /*
+     * I declare variable coffee that lets me store an array of structs.
+     * This is what lets me hold all the coffee anyone ever sends to me!
+     */
+    Coffee[] coffee;
+
+    /*
+     * I added a function getAllCoffee which will return the struct array, coffee, to us.
+     * This will make it easy to retrieve the coffee from our website!
+     */
+    function getAllCoffee() public view returns (Coffee[] memory) {
+        return coffee;
+    }
+
+    // Get All coffee bought
+    function getTotalCoffee() public view returns (uint256) {
+        // Optional: Add this line if you want to see the contract print the value!
+        // We'll also print it over in run.js as well.
+        return totalCoffee;
+    }
+
+    /*
+     * You'll notice I changed the buyCoffee function a little here as well and
+     * now it requires a string called _message. This is the message our user
+     * sends us from the front end!
+     */
+    function buy(string memory _message, string memory _name) public payable {
+        uint256 cost = 0.001 ether;
+        require(msg.value >= cost, "Insufficient Ether provided");
+
+        totalCoffee += 1;
+
+        /*
+         * This is where I actually store the coffee data in the array.
+         */
+        coffee.push(Coffee(msg.sender, _message, _name, block.timestamp));
+
+        (bool success, ) = payable(owner).call{value: msg.value}("");
+        require(success, "Failed to send money");
+
+        emit NewCoffee(msg.sender, block.timestamp, _message, _name);
+    }
+}

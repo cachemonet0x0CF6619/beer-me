@@ -1,9 +1,13 @@
 const hre = require('hardhat')
 
 async function main() {
-  const Contract = await hre.ethers.getContractFactory('ProbablySomething')
-  const contract = await Contract.deploy()
-  console.log(contract.address);
+  const Coffee = await hre.ethers.getContractFactory('CoffeePortal');
+  const coffee = await Coffee.deploy();
+  console.log(coffee.address);
+
+  const Beer = await hre.ethers.getContractFactory('BeerMe');
+  const beer = await Beer.deploy();
+  console.log(beer.address);
 }
 
 main()
